@@ -1,0 +1,95 @@
+{% extends 'basicHome.html' %}
+
+{% load filters %}
+
+{% block title %} {{product.name}} {% endblock %}
+
+
+{% block search %}
+
+<form  action="/viewProducts/search" class="d-flex mx-2 search" style="width: 600px;">
+
+    <input class="form-control me-2" type="text" name="keyword"  placeholder="Search" aria-label="Search" required>
+    <button class="btn btn-outline-success" type="submit">Search</button>
+
+</form>
+
+{% endblock %}
+
+
+{% block body %}
+
+<div class="container my-4">
+    <div class="row">
+        <div class="col-md-5 my-2">
+            <div class="row">
+                <img src="/media//{{product.image}}" width="350px" height="400px">
+            </div>
+        </div>
+        <div class="col-md-7 my-2" >
+
+            <h3>{{product.name}}</h3>
+            <sup>&#x20B9;</sup>
+            <h4 class="d-inline-block">{{product|actualPrice}}</h4>    
+            {% if product.quantity and product.discount %} <s>{{product.price}}</s> {% endif %}
+
+            {% if product.quantity and product.discount > 0 %}
+                <span class="text-success mx-3">{{product.discount}}% Off</span>
+            {% endif %}
+
+            <div class="my-2">
+                {% for id,color,ram,storage in sProducts %} 
+                    {% if id is product.id %}
+                        <a class="btn btn-dark my-1" href="
+                        /viewProducts/productDetails/{{id}}">
+                            {{color}}
+                            {% comment %} {% if ram %}
+                            &nbsp;&nbsp;&nbsp;{{ram}} | {{storage}}
+                            {% endif %} {% endcomment %}
+                        </a>
+                    {% else %}   
+                        <a class="btn btn-secondary my-1" href="
+                        /viewProducts/productDetails/{{id}}">
+                            {{color}}
+                            {% comment %} {% if ram %}
+                            &nbsp;&nbsp;&nbsp;{{ram}} | {{storage}}
+                            {% endif %} {% endcomment %}
+                        </a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            {% comment %} <!-- <h5 class="my-3"> {{product.color}}</h5>
+            
+            {% if product.category|hasRam %}
+                <h5> {{product.ram}} | {{product.storage}}</h5>
+            {% endif %} --> {% endcomment %}
+
+            <p>{{product.desc|replaceNewLines|linebreaks}}</p>
+
+            • Delivery in {{product.deliveryDays}} Days | <span class="text-success"> Free</span><br>
+            • Return Policy: {{product.returnPolicy}}<br>
+            
+            {% if not product.quantity %}
+                <button class="btn btn-danger my-2">Out Of Stock</button>
+            {% else %}
+            
+                <a class="btn btn-primary my-2" href="/checkout?id={{product.id}}"> Buy Now </a>
+                {% if user.is_authenticated %}
+
+                    {% if product|isInCart:user %}
+                        <a class="btn btn-primary mx-2" href="/viewCart">Go To Cart</a>
+                    {% else %}
+                        <a class="btn btn-primary mx-2" href="/addToCart?id={{product.id}}">Add to Cart</a>
+                    {% endif %} 
+
+                {% else %}
+                     <a class="btn btn-primary mx-2" href="/addToCart?id={{product.id}}">Add to Cart</a>
+                {% endif %}      
+
+            {% endif %}         
+        </div>
+    </div>
+</div>
+
+{% endblock %}

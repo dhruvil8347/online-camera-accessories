@@ -1,0 +1,51 @@
+{% extends 'basicHome.html' %}
+
+{% load filters %}
+
+{% block title %} Wonder Cart {% endblock %}
+
+{% block search %}
+
+<form  action="/viewProducts/search" class="d-flex mx-2">
+    <input class="form-control me-2" type="text" name="keyword" value="{{keyword}}" placeholder="Search" aria-label="Search" required style="width:600px;">
+    <button class="btn btn-outline-success" type="submit">Search</button>
+</form>
+
+{% endblock %}
+
+
+{% block body %}
+
+{% if matchedCategories|length > 0 %}
+
+    {% for category in matchedCategories %}
+    <div class="container">
+        <div class="row row-cols-1 row-cols-md-5 g-1 my-3">
+            {% for product in category %}
+            <a href="/viewProducts/productDetails/{{product.id}}" class="text-dark" style="text-decoration: none;">
+                <div class="col" style="height: 320px">
+                    <div class="card h-100">
+                        <img src="/media/{{product.image}}" class="card-img-top" />
+                        <div class="card-body">
+                            <h6>{{product.name}}</h6>
+                            <sup>&#x20B9;</sup>
+                            <h5 class="d-inline-block">{{product|actualPrice}}</h5>
+                            {% if product.discount %} <s>{{product.price}}</s> {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+
+{% else %}
+
+<div class="d-flex justify-content-center" style="background-color:#eee8e8">
+    <img src="/media/images/no_result.gif">
+</div>
+
+{% endif %}
+
+{% endblock %}
